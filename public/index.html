@@ -249,13 +249,13 @@
       </p>
 
       <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:8px;">
-        Google Ads Kundennummer (CID)
+        Google Ads Kundennummer (CID) — Format: XXX-XXX-XXXX
       </label>
       <input
         id="cid-input"
         type="text"
         inputmode="numeric"
-        placeholder="0000-0000-00"
+        placeholder="000-000-0000"
         maxlength="12"
         class="cid-input"
         style="width:100%;border:2px solid #e2e8f0;border-radius:14px;padding:16px;outline:none;transition:border-color 0.2s;"
@@ -275,17 +275,11 @@
       <div style="margin-top:24px;background:#eff8fb;border:1px solid #bde3ef;border-radius:12px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start;">
         <i data-lucide="info" style="width:16px;height:16px;color:#0D5F7A;flex-shrink:0;margin-top:1px;"></i>
         <p style="font-size:0.81rem;color:#4b5563;margin:0;line-height:1.5;">
-          Nur Bestandskunden des SEA-Kollektivs erhalten Zugang. Deine CID findest du oben links in deinem Google Ads Konto (Format: XXXX-XXXX-XX).
+          Nur Bestandskunden des SEA-Kollektivs erhalten Zugang. Deine CID findest du oben links in deinem Google Ads Konto (Format: XXX-XXX-XXXX).
         </p>
       </div>
 
       <!-- Demo hint -->
-      <div style="margin-top:12px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:12px 16px;display:flex;gap:10px;align-items:flex-start;">
-        <i data-lucide="flask-conical" style="width:16px;height:16px;color:#d97706;flex-shrink:0;margin-top:1px;"></i>
-        <p style="font-size:0.78rem;color:#92400e;margin:0;line-height:1.5;">
-          <strong>Demo-Modus:</strong> Test-CID: <span style="font-family:monospace;font-weight:600;">0000-0000-00</span>
-        </p>
-      </div>
 
       <div style="margin-top:20px;display:flex;align-items:center;justify-content:center;gap:6px;color:#94a3b8;font-size:0.75rem;">
         <i data-lucide="shield-check" style="width:13px;height:13px;"></i>
@@ -384,10 +378,13 @@ const CONFIG = {
   POLL_ENDPOINT: '/api/messages',
   POLL_INTERVAL_MS: 8000,
 
-  // Authorized CIDs — replace with DB/KV lookup in production
+  // Authorized CIDs (Format: XXX-XXX-XXXX)
   AUTHORIZED_CIDS: [
-    '0000-0000-00',
-    // Add real customer CIDs here
+    '409-079-3184', // Techflex Germany GmbH
+    '964-083-9872', // Conword GmbH
+    '114-350-1538', // arentis veranstaltungstechnik GmbH
+    '631-049-4552', // Diamond Painting
+    '434-073-5546', // Geiz Dental
   ],
 };
 
@@ -405,9 +402,9 @@ const cidInput = document.getElementById('cid-input');
 
 cidInput.addEventListener('input', function () {
   const digits  = this.value.replace(/\D/g, '').substring(0, 10);
-  let formatted = digits.substring(0, 4);
-  if (digits.length > 4) formatted += '-' + digits.substring(4, 8);
-  if (digits.length > 8) formatted += '-' + digits.substring(8, 10);
+  let formatted = digits.substring(0, 3);
+  if (digits.length > 3) formatted += '-' + digits.substring(3, 6);
+  if (digits.length > 6) formatted += '-' + digits.substring(6, 10);
   this.value = formatted;
 
   const err = document.getElementById('cid-error');
@@ -428,7 +425,7 @@ function handleLogin() {
   const errEl  = document.getElementById('cid-error');
 
   if (cid.replace(/\D/g, '').length < 10) {
-    showError(errEl, 'Bitte gib deine vollständige Kundennummer ein (Format: XXXX-XXXX-XX).');
+    showError(errEl, 'Bitte gib deine vollständige Kundennummer ein (Format: XXX-XXX-XXXX).');
     return;
   }
   if (!CONFIG.AUTHORIZED_CIDS.includes(cid)) {
