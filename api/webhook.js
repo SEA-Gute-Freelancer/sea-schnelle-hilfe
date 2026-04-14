@@ -22,7 +22,7 @@ module.exports = async function handler(req, res) {
     const originalText = msg.reply_to_message.text || '';
 
     // Extract CID from the tagged original message
-    const cidMatch = originalText.match(/CID\):\s*(\d{4}-\d{4}-\d{2})/);
+    const cidMatch = originalText.match(/CID\):\s*(\d{3}-\d{3}-\d{4})/);
 
     if (cidMatch) {
       const cid   = cidMatch[1];
