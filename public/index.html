@@ -7,7 +7,7 @@
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#0D5F7A" />
+  <meta name="theme-color" content="#1E1B16" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="SEA Hilfe" />
@@ -20,17 +20,16 @@
       theme: {
         extend: {
           colors: {
-            primary: {
-              50:  '#e7f3f7',
-              100: '#c3e1ec',
-              500: '#1B8A8A',
-              600: '#0D5F7A',
-              700: '#094d63',
-              800: '#063d4f',
-            },
+            gold:       '#C9A96E',
+            'gold-light': '#DFC99A',
+            'gold-dark':  '#8A6B3A',
+            cream:      '#FAF8F4',
+            'cream-dark': '#EDE8DF',
+            charcoal:   '#1E1B16',
           },
           fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            heading: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans:    ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
           },
         },
       },
@@ -40,10 +39,10 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Inter + Playfair Display -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap" rel="stylesheet">
 
   <style>
     *, *::before, *::after { box-sizing: border-box; }
@@ -52,40 +51,91 @@
       height: 100%;
       margin: 0;
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: #f0f4f8;
+      background: #FAF8F4;
       overflow: hidden;
     }
 
     #app { height: 100%; display: flex; flex-direction: column; }
 
-    /* Screens */
     .screen { display: none; flex-direction: column; height: 100%; overflow: hidden; }
     .screen.active { display: flex; }
 
-    /* Login */
+    /* ── LOGIN ── */
     .login-hero {
-      background: linear-gradient(145deg, #094d63 0%, #0D5F7A 50%, #1B8A8A 100%);
+      background: #1E1B16;
       flex-shrink: 0;
     }
+
+    .logo-mark {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .logo-sgf {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      color: #C9A96E;
+    }
+    .logo-full {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #C9A96E;
+    }
+
+    .eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: #C9A96E;
+    }
+
     .cid-input {
       font-family: 'Courier New', monospace;
       letter-spacing: 0.12em;
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       text-align: center;
+      width: 100%;
+      border: 1.5px solid #EDE8DF;
+      border-radius: 12px;
+      padding: 15px;
+      background: #FAF8F4;
+      color: #1E1B16;
+      outline: none;
+      transition: border-color 0.2s;
     }
-    .login-btn {
-      background: linear-gradient(135deg, #0D5F7A, #1B8A8A);
-      transition: opacity 0.2s, transform 0.1s;
-    }
-    .login-btn:hover { opacity: 0.92; }
-    .login-btn:active { transform: scale(0.98); }
+    .cid-input:focus { border-color: #C9A96E; }
+    .cid-input::placeholder { color: #C9A96E; opacity: 0.4; }
 
-    /* Chat */
+    .btn-primary {
+      width: 100%;
+      padding: 15px;
+      border-radius: 999px;
+      background: #C9A96E;
+      color: #1E1B16;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.01em;
+    }
+    .btn-primary:hover  { background: #8A6B3A; color: #FAF8F4; }
+    .btn-primary:active { transform: scale(0.98); }
+
+    /* ── CHAT HEADER ── */
     .chat-header {
-      background: linear-gradient(145deg, #094d63 0%, #0D5F7A 50%, #1B8A8A 100%);
+      background: #1E1B16;
       flex-shrink: 0;
     }
 
+    /* ── MESSAGES ── */
     .messages-container {
       flex: 1;
       overflow-y: auto;
@@ -94,7 +144,7 @@
       flex-direction: column;
       gap: 10px;
       scroll-behavior: smooth;
-      background: #f0f4f8;
+      background: #FAF8F4;
     }
 
     .msg-wrapper-sent     { display: flex; flex-direction: column; align-items: flex-end; }
@@ -103,71 +153,75 @@
     .bubble {
       max-width: 78%;
       border-radius: 18px;
-      padding: 10px 15px;
-      line-height: 1.45;
-      font-size: 0.9rem;
+      padding: 11px 16px;
+      line-height: 1.5;
+      font-size: 0.88rem;
       word-break: break-word;
     }
     .bubble-sent {
-      background: #0D5F7A;
-      color: white;
+      background: #1E1B16;
+      color: #FAF8F4;
       border-bottom-right-radius: 4px;
     }
     .bubble-received {
       background: white;
-      color: #1a202c;
+      color: #1E1B16;
       border-bottom-left-radius: 4px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      border: 1px solid #EDE8DF;
     }
     .msg-time {
-      font-size: 0.7rem;
-      color: #94a3b8;
-      margin-top: 3px;
+      font-size: 0.68rem;
+      color: #C9A96E;
+      margin-top: 4px;
+      letter-spacing: 0.03em;
     }
 
-    /* Status pulse */
+    /* ── STATUS DOT ── */
     .status-dot {
-      width: 9px; height: 9px;
+      width: 8px; height: 8px;
       border-radius: 50%;
-      background: #4ade80;
+      background: #C9A96E;
       display: inline-block;
-      animation: pulse-dot 2s infinite;
+      animation: pulse-gold 2.5s infinite;
     }
-    @keyframes pulse-dot {
+    @keyframes pulse-gold {
       0%, 100% { opacity: 1; }
-      50%       { opacity: 0.45; }
+      50%       { opacity: 0.35; }
     }
 
-    /* Input area */
+    /* ── INPUT AREA ── */
     .input-area {
       flex-shrink: 0;
       padding: 10px 12px;
       padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
       background: white;
-      border-top: 1px solid #e2e8f0;
+      border-top: 1px solid #EDE8DF;
       display: flex;
       gap: 8px;
       align-items: flex-end;
     }
     .chat-textarea {
       flex: 1;
-      border: 1.5px solid #cbd5e1;
+      border: 1.5px solid #EDE8DF;
       border-radius: 22px;
       padding: 10px 16px;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-family: inherit;
       line-height: 1.4;
       resize: none;
       outline: none;
       max-height: 110px;
       overflow-y: auto;
+      background: #FAF8F4;
+      color: #1E1B16;
       transition: border-color 0.2s;
     }
-    .chat-textarea:focus { border-color: #0D5F7A; }
+    .chat-textarea:focus { border-color: #C9A96E; }
+
     .send-btn {
       width: 44px; height: 44px;
       border-radius: 50%;
-      background: #0D5F7A;
+      background: #C9A96E;
       border: none;
       cursor: pointer;
       display: flex;
@@ -176,18 +230,18 @@
       flex-shrink: 0;
       transition: background 0.2s, transform 0.1s;
     }
-    .send-btn:hover   { background: #094d63; }
+    .send-btn:hover   { background: #8A6B3A; }
     .send-btn:active  { transform: scale(0.93); }
-    .send-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+    .send-btn:disabled { background: #DFC99A; cursor: not-allowed; }
 
-    /* Typing dots */
+    /* ── TYPING DOTS ── */
     @keyframes bounce-dot {
       0%, 80%, 100% { transform: translateY(0); }
       40%            { transform: translateY(-5px); }
     }
     .dot {
-      width: 7px; height: 7px;
-      background: #94a3b8;
+      width: 6px; height: 6px;
+      background: #C9A96E;
       border-radius: 50%;
       display: inline-block;
     }
@@ -195,61 +249,86 @@
     .dot:nth-child(2) { animation: bounce-dot 1s infinite 0.2s; }
     .dot:nth-child(3) { animation: bounce-dot 1s infinite 0.4s; }
 
-    /* Toast */
+    /* ── TOAST ── */
     .toast {
       position: fixed;
       bottom: 80px;
       left: 50%;
       transform: translateX(-50%) translateY(12px);
-      background: #1a202c;
-      color: white;
+      background: #1E1B16;
+      color: #FAF8F4;
       padding: 9px 18px;
       border-radius: 8px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       opacity: 0;
       transition: opacity 0.25s, transform 0.25s;
       z-index: 9999;
       pointer-events: none;
       white-space: nowrap;
+      border: 1px solid #C9A96E;
     }
-    .toast.show   { opacity: 1; transform: translateX(-50%) translateY(0); }
-    .toast.error  { background: #dc2626; }
-    .toast.success { background: #16a34a; }
+    .toast.show    { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.error   { background: #7f1d1d; border-color: #f87171; }
+    .toast.success { background: #1E1B16; border-color: #C9A96E; }
 
-    /* Scrollbar */
-    .messages-container::-webkit-scrollbar { width: 4px; }
+    /* ── SCROLLBAR ── */
+    .messages-container::-webkit-scrollbar { width: 3px; }
     .messages-container::-webkit-scrollbar-track { background: transparent; }
-    .messages-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .messages-container::-webkit-scrollbar-thumb { background: #DFC99A; border-radius: 4px; }
+
+    /* ── DIVIDER ── */
+    .gold-divider {
+      width: 40px; height: 1px;
+      background: #C9A96E;
+      margin: 12px auto 0;
+      opacity: 0.5;
+    }
   </style>
 </head>
 <body>
 
 <div id="app">
 
-  <!-- ======================================================== -->
-  <!-- LOGIN SCREEN                                              -->
-  <!-- ======================================================== -->
+  <!-- ============================================================ -->
+  <!-- LOGIN SCREEN                                                  -->
+  <!-- ============================================================ -->
   <div id="login-screen" class="screen active">
 
-    <div class="login-hero px-6 pt-16 pb-10 flex flex-col items-center text-white">
-      <div style="width:76px;height:76px;background:rgba(255,255,255,0.15);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;backdrop-filter:blur(4px);">
-        <i data-lucide="zap" style="width:38px;height:38px;stroke:white;fill:rgba(255,255,255,0.2);"></i>
+    <!-- Hero: Charcoal mit Gold-Akzent -->
+    <div class="login-hero px-6 pt-14 pb-10 flex flex-col items-center">
+
+      <!-- Logo -->
+      <div class="logo-mark mb-6">
+        <div style="width:52px;height:52px;border:1.5px solid #C9A96E;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;">
+          <span class="logo-sgf" style="font-size:14px;letter-spacing:0.08em;">SGF</span>
+        </div>
+        <span class="logo-full">SEA Gute Freelancer</span>
       </div>
-      <h1 style="font-size:1.6rem;font-weight:700;margin:0;">SEA Schnelle Hilfe</h1>
-      <p style="font-size:0.85rem;color:rgba(255,255,255,0.78);margin:6px 0 0;text-align:center;">
-        Direkter Notfall-Support — wenn es wirklich brennt.
+
+      <!-- Eyebrow + Headline -->
+      <p class="eyebrow mb-3">Notfall-Support</p>
+      <h1 style="font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:#FAF8F4;text-align:center;margin:0;line-height:1.2;">
+        SEA Schnelle <em style="color:#C9A96E;font-style:italic;">Hilfe</em>
+      </h1>
+      <p style="font-size:0.82rem;color:rgba(250,248,244,0.55);margin:10px 0 0;text-align:center;letter-spacing:0.02em;">
+        Direkter Support — wenn es wirklich brennt.
       </p>
+      <div class="gold-divider"></div>
     </div>
 
-    <div style="flex:1;overflow-y:auto;padding:28px 24px;max-width:420px;margin:0 auto;width:100%;">
+    <!-- Form: Cream -->
+    <div style="flex:1;overflow-y:auto;padding:28px 24px;max-width:420px;margin:0 auto;width:100%;background:#FAF8F4;">
 
-      <h2 style="font-size:1.05rem;font-weight:600;color:#1a202c;margin:0 0 4px;">Zugang freischalten</h2>
-      <p style="font-size:0.85rem;color:#64748b;margin:0 0 20px;line-height:1.5;">
-        Gib deine Google Ads Kundennummer ein, um den Chat zu starten.
+      <p class="eyebrow mb-2" style="color:#8A6B3A;">Zugang freischalten</p>
+      <h2 style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:#1E1B16;margin:0 0 6px;">
+        Deine Google Ads Kundennummer
+      </h2>
+      <p style="font-size:0.82rem;color:#6b6456;margin:0 0 20px;line-height:1.55;">
+        Gib deine CID ein, um den Chat zu öffnen.
       </p>
 
-      <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:8px;">
-        Google Ads Kundennummer (CID) — Format: XXX-XXX-XXXX
+      <label style="display:block;font-size:0.75rem;font-weight:500;color:#1E1B16;margin-bottom:8px;letter-spacing:0.04em;text-transform:uppercase;">
+        CID — Format: XXX-XXX-XXXX
       </label>
       <input
         id="cid-input"
@@ -258,83 +337,77 @@
         placeholder="000-000-0000"
         maxlength="12"
         class="cid-input"
-        style="width:100%;border:2px solid #e2e8f0;border-radius:14px;padding:16px;outline:none;transition:border-color 0.2s;"
         onkeydown="if(event.key==='Enter') handleLogin()"
       />
-      <p id="cid-error" style="display:none;color:#dc2626;font-size:0.82rem;margin:8px 0 0;line-height:1.4;"></p>
+      <p id="cid-error" style="display:none;color:#b45309;font-size:0.8rem;margin:8px 0 0;line-height:1.4;"></p>
 
-      <button
-        onclick="handleLogin()"
-        class="login-btn"
-        style="margin-top:20px;width:100%;padding:15px;border-radius:14px;color:white;font-weight:600;font-size:0.95rem;border:none;cursor:pointer;letter-spacing:0.01em;"
-      >
+      <button onclick="handleLogin()" class="btn-primary" style="margin-top:20px;">
         Zugang freischalten
       </button>
 
       <!-- Info box -->
-      <div style="margin-top:24px;background:#eff8fb;border:1px solid #bde3ef;border-radius:12px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start;">
-        <i data-lucide="info" style="width:16px;height:16px;color:#0D5F7A;flex-shrink:0;margin-top:1px;"></i>
-        <p style="font-size:0.81rem;color:#4b5563;margin:0;line-height:1.5;">
-          Nur Bestandskunden des SEA-Kollektivs erhalten Zugang. Deine CID findest du oben links in deinem Google Ads Konto (Format: XXX-XXX-XXXX).
+      <div style="margin-top:20px;background:#EDE8DF;border-radius:12px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start;">
+        <i data-lucide="shield-check" style="width:15px;height:15px;color:#C9A96E;flex-shrink:0;margin-top:1px;"></i>
+        <p style="font-size:0.79rem;color:#4a4035;margin:0;line-height:1.55;">
+          Nur Bestandskunden des SEA-Kollektivs erhalten Zugang. Deine CID findest du oben links in Google Ads (Format: XXX-XXX-XXXX).
         </p>
       </div>
 
-      <!-- Demo hint -->
-
-      <div style="margin-top:20px;display:flex;align-items:center;justify-content:center;gap:6px;color:#94a3b8;font-size:0.75rem;">
-        <i data-lucide="shield-check" style="width:13px;height:13px;"></i>
-        <span>Sicher &amp; datenschutzkonform — kein WhatsApp-Chaos</span>
+      <div style="margin-top:16px;display:flex;align-items:center;justify-content:center;gap:5px;color:#C9A96E;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;">
+        <i data-lucide="lock" style="width:11px;height:11px;"></i>
+        <span>Sicher & datenschutzkonform</span>
       </div>
 
     </div>
   </div>
 
-  <!-- ======================================================== -->
-  <!-- CHAT SCREEN                                               -->
-  <!-- ======================================================== -->
+  <!-- ============================================================ -->
+  <!-- CHAT SCREEN                                                   -->
+  <!-- ============================================================ -->
   <div id="chat-screen" class="screen">
 
-    <!-- Header -->
+    <!-- Header: Charcoal -->
     <div class="chat-header" style="padding: 44px 16px 14px;">
       <div style="display:flex;align-items:center;gap:10px;">
-        <button onclick="handleLogout()" style="background:rgba(255,255,255,0.12);border:none;border-radius:10px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <i data-lucide="arrow-left" style="width:18px;height:18px;stroke:white;"></i>
+
+        <button onclick="handleLogout()" style="background:rgba(201,169,110,0.12);border:none;border-radius:10px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i data-lucide="arrow-left" style="width:17px;height:17px;stroke:#C9A96E;"></i>
         </button>
 
-        <div style="width:40px;height:40px;background:rgba(255,255,255,0.18);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <i data-lucide="users" style="width:20px;height:20px;stroke:white;"></i>
+        <!-- Logo in Header -->
+        <div style="width:38px;height:38px;border:1px solid #C9A96E;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span style="font-family:'Inter',sans-serif;font-weight:700;font-size:10px;color:#C9A96E;letter-spacing:0.05em;">SGF</span>
         </div>
 
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:7px;">
-            <span style="color:white;font-weight:600;font-size:0.95rem;">SEA-Kollektiv Support</span>
+            <span style="font-family:'Playfair Display',serif;font-weight:700;color:#FAF8F4;font-size:1rem;">SEA-Kollektiv Support</span>
             <span class="status-dot"></span>
           </div>
-          <p style="color:rgba(255,255,255,0.72);font-size:0.73rem;margin:0;">6 Strategen · Antwort typisch &lt;15 Min.</p>
+          <p style="color:rgba(201,169,110,0.7);font-size:0.7rem;margin:0;letter-spacing:0.04em;">6 Strategen · Antwort &lt;15 Min.</p>
         </div>
 
         <button onclick="showInfo()" style="background:none;border:none;cursor:pointer;padding:6px;">
-          <i data-lucide="info" style="width:18px;height:18px;stroke:rgba(255,255,255,0.75);"></i>
+          <i data-lucide="more-vertical" style="width:18px;height:18px;stroke:rgba(201,169,110,0.6);"></i>
         </button>
       </div>
     </div>
 
-    <!-- CID badge -->
-    <div style="background:#eff8fb;border-bottom:1px solid #bde3ef;padding:7px 16px;display:flex;align-items:center;gap:7px;flex-shrink:0;">
-      <i data-lucide="user-check" style="width:13px;height:13px;color:#0D5F7A;flex-shrink:0;"></i>
-      <span style="font-size:0.75rem;color:#4b5563;">
-        Angemeldet als: <strong id="cid-display" style="font-family:monospace;color:#0D5F7A;"></strong>
+    <!-- CID Badge -->
+    <div style="background:#EDE8DF;border-bottom:1px solid #d4cdc3;padding:6px 16px;display:flex;align-items:center;gap:7px;flex-shrink:0;">
+      <i data-lucide="user-check" style="width:12px;height:12px;color:#C9A96E;flex-shrink:0;"></i>
+      <span style="font-size:0.72rem;color:#4a4035;">
+        Angemeldet als: <strong id="cid-display" style="font-family:monospace;color:#8A6B3A;"></strong>
       </span>
-      <span id="demo-badge" style="margin-left:auto;font-size:0.68rem;background:#fef3c7;color:#d97706;border:1px solid #fde68a;border-radius:5px;padding:1px 6px;font-weight:600;display:none;">DEMO</span>
     </div>
 
     <!-- Messages -->
     <div id="messages" class="messages-container">
       <div class="msg-wrapper-received">
         <div class="bubble bubble-received">
-          <p style="margin:0 0 6px;"><strong>Hallo! Willkommen bei SEA Schnelle Hilfe.</strong></p>
-          <p style="margin:0 0 6px;">Beschreibe dein Problem so konkret wie möglich — wir melden uns so schnell wie möglich.</p>
-          <p style="margin:0;font-size:0.82rem;color:#64748b;">Typisch: Budget läuft weg, Kampagne aktiv aber keine Klicks, Conversion-Tracking-Fehler, Konto gesperrt...</p>
+          <p style="margin:0 0 5px;font-family:'Playfair Display',serif;font-weight:700;font-size:0.9rem;">Willkommen bei SEA Schnelle Hilfe.</p>
+          <p style="margin:0 0 5px;color:#4a4035;">Beschreibe dein Problem so konkret wie möglich — wir melden uns sofort.</p>
+          <p style="margin:0;font-size:0.79rem;color:#8A6B3A;">Typisch: Budget läuft weg · Keine Klicks · Conversion-Fehler · Konto gesperrt</p>
         </div>
         <span class="msg-time">SEA-Kollektiv · jetzt</span>
       </div>
@@ -351,7 +424,7 @@
         oninput="autoResize(this)"
       ></textarea>
       <button id="send-btn" class="send-btn" onclick="sendMessage()">
-        <i data-lucide="send" style="width:17px;height:17px;stroke:white;margin-left:2px;"></i>
+        <i data-lucide="send" style="width:16px;height:16px;stroke:#1E1B16;margin-left:2px;"></i>
       </button>
     </div>
 
@@ -365,17 +438,11 @@
 <script>
 // ================================================================
 // CONFIG
-// Token lives in Vercel env vars — never in frontend code.
 // ================================================================
 const CONFIG = {
-  // Set to true to simulate Telegram locally (no backend needed)
   DEMO_MODE: false,
-
-  // Vercel serverless API endpoints (same domain, no CORS issues)
-  API_ENDPOINT: '/api/send',
-
-  // Polling endpoint for strategist replies (requires Upstash Redis)
-  POLL_ENDPOINT: '/api/messages',
+  API_ENDPOINT:    '/api/send',
+  POLL_ENDPOINT:   '/api/messages',
   POLL_INTERVAL_MS: 8000,
 
   // Authorized CIDs (Format: XXX-XXX-XXXX)
@@ -396,7 +463,7 @@ let pollTimer  = null;
 let lastMsgTs  = Date.now();
 
 // ================================================================
-// CID INPUT — auto-masking XXXX-XXXX-XX
+// CID INPUT — auto-masking XXX-XXX-XXXX
 // ================================================================
 const cidInput = document.getElementById('cid-input');
 
@@ -407,13 +474,12 @@ cidInput.addEventListener('input', function () {
   if (digits.length > 6) formatted += '-' + digits.substring(6, 10);
   this.value = formatted;
 
-  const err = document.getElementById('cid-error');
-  err.style.display = 'none';
+  document.getElementById('cid-error').style.display = 'none';
 
   if (digits.length === 10) {
-    this.style.borderColor = CONFIG.AUTHORIZED_CIDS.includes(formatted) ? '#16a34a' : '#e2e8f0';
+    this.style.borderColor = CONFIG.AUTHORIZED_CIDS.includes(formatted) ? '#C9A96E' : '#EDE8DF';
   } else {
-    this.style.borderColor = '#e2e8f0';
+    this.style.borderColor = '#EDE8DF';
   }
 });
 
@@ -421,8 +487,8 @@ cidInput.addEventListener('input', function () {
 // AUTH
 // ================================================================
 function handleLogin() {
-  const cid    = cidInput.value.trim();
-  const errEl  = document.getElementById('cid-error');
+  const cid   = cidInput.value.trim();
+  const errEl = document.getElementById('cid-error');
 
   if (cid.replace(/\D/g, '').length < 10) {
     showError(errEl, 'Bitte gib deine vollständige Kundennummer ein (Format: XXX-XXX-XXXX).');
@@ -430,7 +496,7 @@ function handleLogin() {
   }
   if (!CONFIG.AUTHORIZED_CIDS.includes(cid)) {
     showError(errEl, 'Diese Kundennummer ist nicht berechtigt. Bitte wende dich an dein SEA-Kollektiv-Team.');
-    cidInput.style.borderColor = '#dc2626';
+    cidInput.style.borderColor = '#b45309';
     return;
   }
 
@@ -447,7 +513,7 @@ function handleLogout() {
   stopPolling();
   currentCID = null;
   cidInput.value = '';
-  cidInput.style.borderColor = '#e2e8f0';
+  cidInput.style.borderColor = '#EDE8DF';
   document.getElementById('cid-error').style.display = 'none';
   resetMessages();
   showScreen('login-screen');
@@ -468,7 +534,7 @@ function showScreen(id) {
 }
 
 function showInfo() {
-  alert('SEA Schnelle Hilfe\n\nEin Produkt des SEA-Kollektivs.\nWebsite: sea-gute-freelancer.de\n\nVersion: 1.0.0 (Prototyp)');
+  alert('SEA Schnelle Hilfe\n\nEin Service des SEA-Kollektivs.\nsea-gute-freelancer.de\n\nVersion: 1.0.0');
 }
 
 // ================================================================
@@ -490,7 +556,7 @@ async function sendMessage() {
     await dispatchToBackend(text);
     if (CONFIG.DEMO_MODE) simulateDemoReply();
   } catch {
-    showToast('Nachricht konnte nicht gesendet werden. Bitte erneut versuchen.', 'error');
+    showToast('Nachricht konnte nicht gesendet werden.', 'error');
   } finally {
     btn.disabled = false;
   }
@@ -503,47 +569,42 @@ async function dispatchToBackend(text) {
     return;
   }
   const res = await fetch(CONFIG.API_ENDPOINT, {
-    method: 'POST',
+    method:  'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      cid:       currentCID,
-      message:   text,
-      timestamp: new Date().toISOString(),
-    }),
+    body:    JSON.stringify({ cid: currentCID, message: text, timestamp: new Date().toISOString() }),
   });
   if (!res.ok) throw new Error('Backend error');
-  showToast('Nachricht gesendet', 'success');
+  showToast('Nachricht gesendet ✓', 'success');
 }
 
 // ================================================================
-// DEMO: simulate strategist reply
+// DEMO REPLIES
 // ================================================================
 const DEMO_REPLIES = [
   'Danke! Wir schauen uns das sofort an — ein Stratege ist bereits dabei.',
-  'Haben wir erhalten. Kannst du uns kurz deinen Google Ads Kontonamen nennen?',
-  'Verstanden. Schau bitte unter Kampagnen → Details → Diagnose, ob dort Fehlermeldungen stehen.',
+  'Haben wir erhalten. Kannst du uns kurz den Kontonamen nennen?',
+  'Verstanden. Schau bitte unter Kampagnen → Diagnose, ob dort Fehlermeldungen stehen.',
   'Das klingt nach einem Budget-Cap-Problem. Hast du heute Nacht Änderungen vorgenommen?',
-  'Kurze Rückmeldung: wir haben uns im Konto eingeloggt und prüfen das Budget-Flow gerade.',
+  'Wir haben uns im Konto eingeloggt und prüfen das gerade.',
 ];
 
 function simulateDemoReply() {
   setTimeout(addTypingIndicator, 1800);
   setTimeout(() => {
     removeTypingIndicator();
-    const reply = DEMO_REPLIES[Math.floor(Math.random() * DEMO_REPLIES.length)];
-    addBubble(reply, 'received');
+    addBubble(DEMO_REPLIES[Math.floor(Math.random() * DEMO_REPLIES.length)], 'received');
   }, 5000);
 }
 
 // ================================================================
-// POLLING (production two-way communication)
+// POLLING
 // ================================================================
 function startPolling() {
   pollTimer = setInterval(async () => {
     try {
       const res  = await fetch(`${CONFIG.POLL_ENDPOINT}?cid=${currentCID}&since=${lastMsgTs}`);
       const data = await res.json();
-      if (data.messages && data.messages.length > 0) {
+      if (data.messages?.length > 0) {
         data.messages.forEach(m => addBubble(m.text, 'received'));
         lastMsgTs = Date.now();
       }
@@ -560,23 +621,23 @@ function stopPolling() {
 // UI HELPERS
 // ================================================================
 function addBubble(text, type) {
-  const el      = document.getElementById('messages');
-  const time    = now();
-  const wrapper = document.createElement('div');
-  const label   = type === 'sent' ? `Du · ${time}` : `SEA-Kollektiv · ${time}`;
+  const el    = document.getElementById('messages');
+  const time  = now();
+  const wrap  = document.createElement('div');
+  const label = type === 'sent' ? `Du · ${time}` : `SEA-Kollektiv · ${time}`;
 
-  wrapper.className = `msg-wrapper-${type}`;
-  wrapper.innerHTML = `
+  wrap.className = `msg-wrapper-${type}`;
+  wrap.innerHTML = `
     <div class="bubble bubble-${type}">${escHtml(text).replace(/\n/g, '<br>')}</div>
     <span class="msg-time">${label}</span>
   `;
-  el.appendChild(wrapper);
+  el.appendChild(wrap);
   el.scrollTop = el.scrollHeight;
 }
 
 let typingNode = null;
 function addTypingIndicator() {
-  const el  = document.getElementById('messages');
+  const el   = document.getElementById('messages');
   typingNode = document.createElement('div');
   typingNode.id = 'typing';
   typingNode.className = 'msg-wrapper-received';
@@ -596,13 +657,12 @@ function removeTypingIndicator() {
 }
 
 function resetMessages() {
-  const el = document.getElementById('messages');
-  el.innerHTML = `
+  document.getElementById('messages').innerHTML = `
     <div class="msg-wrapper-received">
       <div class="bubble bubble-received">
-        <p style="margin:0 0 6px;"><strong>Hallo! Willkommen bei SEA Schnelle Hilfe.</strong></p>
-        <p style="margin:0 0 6px;">Beschreibe dein Problem so konkret wie möglich — wir melden uns so schnell wie möglich.</p>
-        <p style="margin:0;font-size:0.82rem;color:#64748b;">Typisch: Budget läuft weg, Kampagne aktiv aber keine Klicks, Conversion-Tracking-Fehler, Konto gesperrt...</p>
+        <p style="margin:0 0 5px;font-family:'Playfair Display',serif;font-weight:700;font-size:0.9rem;">Willkommen bei SEA Schnelle Hilfe.</p>
+        <p style="margin:0 0 5px;color:#4a4035;">Beschreibe dein Problem so konkret wie möglich — wir melden uns sofort.</p>
+        <p style="margin:0;font-size:0.79rem;color:#8A6B3A;">Typisch: Budget läuft weg · Keine Klicks · Conversion-Fehler · Konto gesperrt</p>
       </div>
       <span class="msg-time">SEA-Kollektiv · jetzt</span>
     </div>
