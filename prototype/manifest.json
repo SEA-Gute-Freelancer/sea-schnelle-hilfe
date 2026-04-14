@@ -1,0 +1,35 @@
+{
+  "name": "SEA Schnelle Hilfe",
+  "short_name": "SEA Hilfe",
+  "description": "Direkter Notfall-Support für Google Ads Kunden — wenn es wirklich brennt.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0D5F7A",
+  "theme_color": "#0D5F7A",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Chat öffnen",
+      "short_name": "Chat",
+      "description": "Direkt zum Support-Chat",
+      "url": "/",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
