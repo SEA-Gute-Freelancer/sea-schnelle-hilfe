@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>SEA Schnelle Hilfe</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0D5F7A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SEA Hilfe" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50:  '#e7f3f7',
+              100: '#c3e1ec',
+              500: '#1B8A8A',
+              600: '#0D5F7A',
+              700: '#094d63',
+              800: '#063d4f',
+            },
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #f0f4f8;
+      overflow: hidden;
+    }
+
+    #app { height: 100%; display: flex; flex-direction: column; }
+
+    /* Screens */
+    .screen { display: none; flex-direction: column; height: 100%; overflow: hidden; }
+    .screen.active { display: flex; }
+
+    /* Login */
+    .login-hero {
+      background: linear-gradient(145deg, #094d63 0%, #0D5F7A 50%, #1B8A8A 100%);
+      flex-shrink: 0;
+    }
+    .cid-input {
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.12em;
+      font-size: 1.3rem;
+      text-align: center;
+    }
+    .login-btn {
+      background: linear-gradient(135deg, #0D5F7A, #1B8A8A);
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .login-btn:hover { opacity: 0.92; }
+    .login-btn:active { transform: scale(0.98); }
+
+    /* Chat */
+    .chat-header {
+      background: linear-gradient(145deg, #094d63 0%, #0D5F7A 50%, #1B8A8A 100%);
+      flex-shrink: 0;
+    }
+
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      scroll-behavior: smooth;
+      background: #f0f4f8;
+    }
+
+    .msg-wrapper-sent     { display: flex; flex-direction: column; align-items: flex-end; }
+    .msg-wrapper-received { display: flex; flex-direction: column; align-items: flex-start; }
+
+    .bubble {
+      max-width: 78%;
+      border-radius: 18px;
+      padding: 10px 15px;
+      line-height: 1.45;
+      font-size: 0.9rem;
+      word-break: break-word;
+    }
+    .bubble-sent {
+      background: #0D5F7A;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+    .bubble-received {
+      background: white;
+      color: #1a202c;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .msg-time {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      margin-top: 3px;
+    }
+
+    /* Status pulse */
+    .status-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: #4ade80;
+      display: inline-block;
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.45; }
+    }
+
+    /* Input area */
+    .input-area {
+      flex-shrink: 0;
+      padding: 10px 12px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+      background: white;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+    .chat-textarea {
+      flex: 1;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 22px;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      line-height: 1.4;
+      resize: none;
+      outline: none;
+      max-height: 110px;
+      overflow-y: auto;
+      transition: border-color 0.2s;
+    }
+    .chat-textarea:focus { border-color: #0D5F7A; }
+    .send-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: #0D5F7A;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .send-btn:hover   { background: #094d63; }
+    .send-btn:active  { transform: scale(0.93); }
+    .send-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    /* Typing dots */
+    @keyframes bounce-dot {
+      0%, 80%, 100% { transform: translateY(0); }
+      40%            { transform: translateY(-5px); }
+    }
+    .dot {
+      width: 7px; height: 7px;
+      background: #94a3b8;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot:nth-child(1) { animation: bounce-dot 1s infinite 0.0s; }
+    .dot:nth-child(2) { animation: bounce-dot 1s infinite 0.2s; }
+    .dot:nth-child(3) { animation: bounce-dot 1s infinite 0.4s; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      background: #1a202c;
+      color: white;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      z-index: 9999;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .toast.show   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.error  { background: #dc2626; }
+    .toast.success { background: #16a34a; }
+
+    /* Scrollbar */
+    .messages-container::-webkit-scrollbar { width: 4px; }
+    .messages-container::-webkit-scrollbar-track { background: transparent; }
+    .messages-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ======================================================== -->
+  <!-- LOGIN SCREEN                                              -->
+  <!-- ======================================================== -->
+  <div id="login-screen" class="screen active">
+
+    <div class="login-hero px-6 pt-16 pb-10 flex flex-col items-center text-white">
+      <div style="width:76px;height:76px;background:rgba(255,255,255,0.15);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;backdrop-filter:blur(4px);">
+        <i data-lucide="zap" style="width:38px;height:38px;stroke:white;fill:rgba(255,255,255,0.2);"></i>
+      </div>
+      <h1 style="font-size:1.6rem;font-weight:700;margin:0;">SEA Schnelle Hilfe</h1>
+      <p style="font-size:0.85rem;color:rgba(255,255,255,0.78);margin:6px 0 0;text-align:center;">
+        Direkter Notfall-Support — wenn es wirklich brennt.
+      </p>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding:28px 24px;max-width:420px;margin:0 auto;width:100%;">
+
+      <h2 style="font-size:1.05rem;font-weight:600;color:#1a202c;margin:0 0 4px;">Zugang freischalten</h2>
+      <p style="font-size:0.85rem;color:#64748b;margin:0 0 20px;line-height:1.5;">
+        Gib deine Google Ads Kundennummer ein, um den Chat zu starten.
+      </p>
+
+      <label style="display:block;font-size:0.8rem;font-weight:500;color:#374151;margin-bottom:8px;">
+        Google Ads Kundennummer (CID)
+      </label>
+      <input
+        id="cid-input"
+        type="text"
+        inputmode="numeric"
+        placeholder="0000-0000-00"
+        maxlength="12"
+        class="cid-input"
+        style="width:100%;border:2px solid #e2e8f0;border-radius:14px;padding:16px;outline:none;transition:border-color 0.2s;"
+        onkeydown="if(event.key==='Enter') handleLogin()"
+      />
+      <p id="cid-error" style="display:none;color:#dc2626;font-size:0.82rem;margin:8px 0 0;line-height:1.4;"></p>
+
+      <button
+        onclick="handleLogin()"
+        class="login-btn"
+        style="margin-top:20px;width:100%;padding:15px;border-radius:14px;color:white;font-weight:600;font-size:0.95rem;border:none;cursor:pointer;letter-spacing:0.01em;"
+      >
+        Zugang freischalten
+      </button>
+
+      <!-- Info box -->
+      <div style="margin-top:24px;background:#eff8fb;border:1px solid #bde3ef;border-radius:12px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start;">
+        <i data-lucide="info" style="width:16px;height:16px;color:#0D5F7A;flex-shrink:0;margin-top:1px;"></i>
+        <p style="font-size:0.81rem;color:#4b5563;margin:0;line-height:1.5;">
+          Nur Bestandskunden des SEA-Kollektivs erhalten Zugang. Deine CID findest du oben links in deinem Google Ads Konto (Format: XXXX-XXXX-XX).
+        </p>
+      </div>
+
+      <!-- Demo hint -->
+      <div style="margin-top:12px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:12px 16px;display:flex;gap:10px;align-items:flex-start;">
+        <i data-lucide="flask-conical" style="width:16px;height:16px;color:#d97706;flex-shrink:0;margin-top:1px;"></i>
+        <p style="font-size:0.78rem;color:#92400e;margin:0;line-height:1.5;">
+          <strong>Demo-Modus:</strong> Test-CID: <span style="font-family:monospace;font-weight:600;">0000-0000-00</span>
+        </p>
+      </div>
+
+      <div style="margin-top:20px;display:flex;align-items:center;justify-content:center;gap:6px;color:#94a3b8;font-size:0.75rem;">
+        <i data-lucide="shield-check" style="width:13px;height:13px;"></i>
+        <span>Sicher &amp; datenschutzkonform — kein WhatsApp-Chaos</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- CHAT SCREEN                                               -->
+  <!-- ======================================================== -->
+  <div id="chat-screen" class="screen">
+
+    <!-- Header -->
+    <div class="chat-header" style="padding: 44px 16px 14px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button onclick="handleLogout()" style="background:rgba(255,255,255,0.12);border:none;border-radius:10px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i data-lucide="arrow-left" style="width:18px;height:18px;stroke:white;"></i>
+        </button>
+
+        <div style="width:40px;height:40px;background:rgba(255,255,255,0.18);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i data-lucide="users" style="width:20px;height:20px;stroke:white;"></i>
+        </div>
+
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span style="color:white;font-weight:600;font-size:0.95rem;">SEA-Kollektiv Support</span>
+            <span class="status-dot"></span>
+          </div>
+          <p style="color:rgba(255,255,255,0.72);font-size:0.73rem;margin:0;">6 Strategen · Antwort typisch &lt;15 Min.</p>
+        </div>
+
+        <button onclick="showInfo()" style="background:none;border:none;cursor:pointer;padding:6px;">
+          <i data-lucide="info" style="width:18px;height:18px;stroke:rgba(255,255,255,0.75);"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- CID badge -->
+    <div style="background:#eff8fb;border-bottom:1px solid #bde3ef;padding:7px 16px;display:flex;align-items:center;gap:7px;flex-shrink:0;">
+      <i data-lucide="user-check" style="width:13px;height:13px;color:#0D5F7A;flex-shrink:0;"></i>
+      <span style="font-size:0.75rem;color:#4b5563;">
+        Angemeldet als: <strong id="cid-display" style="font-family:monospace;color:#0D5F7A;"></strong>
+      </span>
+      <span id="demo-badge" style="margin-left:auto;font-size:0.68rem;background:#fef3c7;color:#d97706;border:1px solid #fde68a;border-radius:5px;padding:1px 6px;font-weight:600;display:none;">DEMO</span>
+    </div>
+
+    <!-- Messages -->
+    <div id="messages" class="messages-container">
+      <div class="msg-wrapper-received">
+        <div class="bubble bubble-received">
+          <p style="margin:0 0 6px;"><strong>Hallo! Willkommen bei SEA Schnelle Hilfe.</strong></p>
+          <p style="margin:0 0 6px;">Beschreibe dein Problem so konkret wie möglich — wir melden uns so schnell wie möglich.</p>
+          <p style="margin:0;font-size:0.82rem;color:#64748b;">Typisch: Budget läuft weg, Kampagne aktiv aber keine Klicks, Conversion-Tracking-Fehler, Konto gesperrt...</p>
+        </div>
+        <span class="msg-time">SEA-Kollektiv · jetzt</span>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <textarea
+        id="chat-input"
+        class="chat-textarea"
+        placeholder="Beschreibe dein Problem..."
+        rows="1"
+        onkeydown="handleChatKey(event)"
+        oninput="autoResize(this)"
+      ></textarea>
+      <button id="send-btn" class="send-btn" onclick="sendMessage()">
+        <i data-lucide="send" style="width:17px;height:17px;stroke:white;margin-left:2px;"></i>
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script>
+// ================================================================
+// CONFIG
+// Token lives in Vercel env vars — never in frontend code.
+// ================================================================
+const CONFIG = {
+  // Set to true to simulate Telegram locally (no backend needed)
+  DEMO_MODE: false,
+
+  // Vercel serverless API endpoints (same domain, no CORS issues)
+  API_ENDPOINT: '/api/send',
+
+  // Polling endpoint for strategist replies (requires Upstash Redis)
+  POLL_ENDPOINT: '/api/messages',
+  POLL_INTERVAL_MS: 8000,
+
+  // Authorized CIDs — replace with DB/KV lookup in production
+  AUTHORIZED_CIDS: [
+    '0000-0000-00',
+    // Add real customer CIDs here
+  ],
+};
+
+// ================================================================
+// STATE
+// ================================================================
+let currentCID = null;
+let pollTimer  = null;
+let lastMsgTs  = Date.now();
+
+// ================================================================
+// CID INPUT — auto-masking XXXX-XXXX-XX
+// ================================================================
+const cidInput = document.getElementById('cid-input');
+
+cidInput.addEventListener('input', function () {
+  const digits  = this.value.replace(/\D/g, '').substring(0, 10);
+  let formatted = digits.substring(0, 4);
+  if (digits.length > 4) formatted += '-' + digits.substring(4, 8);
+  if (digits.length > 8) formatted += '-' + digits.substring(8, 10);
+  this.value = formatted;
+
+  const err = document.getElementById('cid-error');
+  err.style.display = 'none';
+
+  if (digits.length === 10) {
+    this.style.borderColor = CONFIG.AUTHORIZED_CIDS.includes(formatted) ? '#16a34a' : '#e2e8f0';
+  } else {
+    this.style.borderColor = '#e2e8f0';
+  }
+});
+
+// ================================================================
+// AUTH
+// ================================================================
+function handleLogin() {
+  const cid    = cidInput.value.trim();
+  const errEl  = document.getElementById('cid-error');
+
+  if (cid.replace(/\D/g, '').length < 10) {
+    showError(errEl, 'Bitte gib deine vollständige Kundennummer ein (Format: XXXX-XXXX-XX).');
+    return;
+  }
+  if (!CONFIG.AUTHORIZED_CIDS.includes(cid)) {
+    showError(errEl, 'Diese Kundennummer ist nicht berechtigt. Bitte wende dich an dein SEA-Kollektiv-Team.');
+    cidInput.style.borderColor = '#dc2626';
+    return;
+  }
+
+  currentCID = cid;
+  document.getElementById('cid-display').textContent = cid;
+  showScreen('chat-screen');
+  setTimeout(() => document.getElementById('chat-input').focus(), 300);
+
+  if (!CONFIG.DEMO_MODE) startPolling();
+}
+
+function handleLogout() {
+  if (!confirm('Möchtest du den Chat wirklich verlassen?')) return;
+  stopPolling();
+  currentCID = null;
+  cidInput.value = '';
+  cidInput.style.borderColor = '#e2e8f0';
+  document.getElementById('cid-error').style.display = 'none';
+  resetMessages();
+  showScreen('login-screen');
+}
+
+function showError(el, msg) {
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// ================================================================
+// SCREEN
+// ================================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  lucide.createIcons();
+}
+
+function showInfo() {
+  alert('SEA Schnelle Hilfe\n\nEin Produkt des SEA-Kollektivs.\nWebsite: sea-gute-freelancer.de\n\nVersion: 1.0.0 (Prototyp)');
+}
+
+// ================================================================
+// MESSAGING
+// ================================================================
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text  = input.value.trim();
+  if (!text) return;
+
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true;
+
+  addBubble(text, 'sent');
+  input.value = '';
+  input.style.height = 'auto';
+
+  try {
+    await dispatchToBackend(text);
+    if (CONFIG.DEMO_MODE) simulateDemoReply();
+  } catch {
+    showToast('Nachricht konnte nicht gesendet werden. Bitte erneut versuchen.', 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function dispatchToBackend(text) {
+  if (CONFIG.DEMO_MODE) {
+    await delay(400);
+    showToast('Gesendet (Demo-Modus)', 'success');
+    return;
+  }
+  const res = await fetch(CONFIG.API_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      cid:       currentCID,
+      message:   text,
+      timestamp: new Date().toISOString(),
+    }),
+  });
+  if (!res.ok) throw new Error('Backend error');
+  showToast('Nachricht gesendet', 'success');
+}
+
+// ================================================================
+// DEMO: simulate strategist reply
+// ================================================================
+const DEMO_REPLIES = [
+  'Danke! Wir schauen uns das sofort an — ein Stratege ist bereits dabei.',
+  'Haben wir erhalten. Kannst du uns kurz deinen Google Ads Kontonamen nennen?',
+  'Verstanden. Schau bitte unter Kampagnen → Details → Diagnose, ob dort Fehlermeldungen stehen.',
+  'Das klingt nach einem Budget-Cap-Problem. Hast du heute Nacht Änderungen vorgenommen?',
+  'Kurze Rückmeldung: wir haben uns im Konto eingeloggt und prüfen das Budget-Flow gerade.',
+];
+
+function simulateDemoReply() {
+  setTimeout(addTypingIndicator, 1800);
+  setTimeout(() => {
+    removeTypingIndicator();
+    const reply = DEMO_REPLIES[Math.floor(Math.random() * DEMO_REPLIES.length)];
+    addBubble(reply, 'received');
+  }, 5000);
+}
+
+// ================================================================
+// POLLING (production two-way communication)
+// ================================================================
+function startPolling() {
+  pollTimer = setInterval(async () => {
+    try {
+      const res  = await fetch(`${CONFIG.POLL_ENDPOINT}?cid=${currentCID}&since=${lastMsgTs}`);
+      const data = await res.json();
+      if (data.messages && data.messages.length > 0) {
+        data.messages.forEach(m => addBubble(m.text, 'received'));
+        lastMsgTs = Date.now();
+      }
+    } catch { /* ignore */ }
+  }, CONFIG.POLL_INTERVAL_MS);
+}
+
+function stopPolling() {
+  clearInterval(pollTimer);
+  pollTimer = null;
+}
+
+// ================================================================
+// UI HELPERS
+// ================================================================
+function addBubble(text, type) {
+  const el      = document.getElementById('messages');
+  const time    = now();
+  const wrapper = document.createElement('div');
+  const label   = type === 'sent' ? `Du · ${time}` : `SEA-Kollektiv · ${time}`;
+
+  wrapper.className = `msg-wrapper-${type}`;
+  wrapper.innerHTML = `
+    <div class="bubble bubble-${type}">${escHtml(text).replace(/\n/g, '<br>')}</div>
+    <span class="msg-time">${label}</span>
+  `;
+  el.appendChild(wrapper);
+  el.scrollTop = el.scrollHeight;
+}
+
+let typingNode = null;
+function addTypingIndicator() {
+  const el  = document.getElementById('messages');
+  typingNode = document.createElement('div');
+  typingNode.id = 'typing';
+  typingNode.className = 'msg-wrapper-received';
+  typingNode.innerHTML = `
+    <div class="bubble bubble-received" style="padding:12px 16px;">
+      <div style="display:flex;gap:5px;align-items:center;">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+    </div>
+    <span class="msg-time">SEA-Kollektiv tippt...</span>
+  `;
+  el.appendChild(typingNode);
+  el.scrollTop = el.scrollHeight;
+}
+function removeTypingIndicator() {
+  if (typingNode) { typingNode.remove(); typingNode = null; }
+}
+
+function resetMessages() {
+  const el = document.getElementById('messages');
+  el.innerHTML = `
+    <div class="msg-wrapper-received">
+      <div class="bubble bubble-received">
+        <p style="margin:0 0 6px;"><strong>Hallo! Willkommen bei SEA Schnelle Hilfe.</strong></p>
+        <p style="margin:0 0 6px;">Beschreibe dein Problem so konkret wie möglich — wir melden uns so schnell wie möglich.</p>
+        <p style="margin:0;font-size:0.82rem;color:#64748b;">Typisch: Budget läuft weg, Kampagne aktiv aber keine Klicks, Conversion-Tracking-Fehler, Konto gesperrt...</p>
+      </div>
+      <span class="msg-time">SEA-Kollektiv · jetzt</span>
+    </div>
+  `;
+}
+
+// ================================================================
+// UTILS
+// ================================================================
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 110) + 'px';
+}
+function escHtml(str) {
+  const d = document.createElement('div');
+  d.appendChild(document.createTextNode(str));
+  return d.innerHTML;
+}
+function now() {
+  return new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+}
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className   = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
+// ================================================================
+// SERVICE WORKER
+// ================================================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
+// ================================================================
+// INIT
+// ================================================================
+window.addEventListener('DOMContentLoaded', () => {
+  lucide.createIcons();
+});
+</script>
+</body>
+</html>
